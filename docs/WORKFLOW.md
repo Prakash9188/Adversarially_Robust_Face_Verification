@@ -29,7 +29,7 @@ FaceEmbedder (frozen InceptionResnetV1, VGGFace2)      model.py
         +--> Attacks on the probe image x2 (anchor x1 untouched)          attacks.py
         |      genuine pair  -> dodging      (push s down)
         |      impostor pair -> impersonation (push s up)
-        |      FGSM, PGD  [Commit 1];  DeepFool, CW, Square, adaptive [Commit 2]
+        |      FGSM, PGD  [Commit 1];  DeepFool, CW, Square, adaptive BPDA [Commit 2]
         |
         +--> Defenses applied to BOTH images at test time                 defenses.py
         |      none | JPEG 75/50/30 | Gaussian | Median 3/5 | bit-depth 4
@@ -73,5 +73,8 @@ python -m venv .venv
 .venv\Scripts\python -m pytest -q tests
 .venv\Scripts\python scripts\run_baseline.py --quick     # smoke test (~minutes)
 .venv\Scripts\python scripts\run_baseline.py             # full Commit-1 baseline
+.venv\Scripts\python scripts\run_detector.py --quick     # Commit-2 smoke test
+.venv\Scripts\python scripts\run_detector.py             # full Commit-2 study (hours on CPU)
+.venv\Scripts\python scripts\demo.py IMG1 IMG2 --same 1 --attack
 ```
 Outputs appear in `experiments/results/`.

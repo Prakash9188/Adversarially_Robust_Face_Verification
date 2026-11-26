@@ -6,6 +6,12 @@ svm    : RBF-kernel SVM (kernel trick)
 gboost : boosted shallow decision trees
 Equal class priors are used so the posterior is not driven by the training mix.
 """
+import warnings
+
+# sklearn>=1.9 deprecates SVC(probability=True) (Platt scaling still works until 1.11).
+# We keep it so the reported SVM numbers stay reproducible with the pinned environment.
+warnings.filterwarnings("ignore", message=".*`probability` parameter was deprecated.*")
+
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.feature_selection import SequentialFeatureSelector

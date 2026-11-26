@@ -1,0 +1,50 @@
+% Built on the CVPR 2027 author kit (https://github.com/cvpr-org/author-kit): cvpr.sty,
+% ieeenat_fullname.bst and preamble.tex are unmodified template files (preamble: + our packages).
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage[pagenumbers]{cvpr}   % project report: authors visible, page numbers on
+\input{preamble}
+
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+
+\def\confName{CVPR}
+\def\confYear{2027}
+
+% Commit 3 cannot contain its own hash: fill these in after the final commit (see docs/commit_log.md)
+\newcommand{\hashthree}{FILL-ME}
+\newcommand{\timethree}{FILL-ME}
+\input{tables/numbers}
+
+\title{A Lightweight Defense Framework for Adversarially Robust Face Verification:\
+Transformation-Consistency Detection with Bayes Fusion}
+
+\author{Om Dinesh Dhande\
+Indian Institute of Technology Jodhpur\
+{\tt\small m26cse014@iitj.ac.in}
+\and
+Prakash Singh\
+Indian Institute of Technology Jodhpur\
+{\tt\small m26csa015@iitj.ac.in}
+\and
+Ankit Kumar\
+Indian Institute of Technology Jodhpur\
+{\tt\small m26csa010@iitj.ac.in}
+}
+
+\begin{document}
+\maketitle
+\input{sec/0_abstract}
+\input{sec/1_intro}
+\input{sec/2_related}
+\input{sec/3_method}
+\input{sec/4_setup}
+\input{sec/5_results}
+\input{sec/6_discussion}
+\input{sec/7_repro}
+{
+    \small
+    \bibliographystyle{ieeenat_fullname}
+    \bibliography{main}
+}
+\end{document}

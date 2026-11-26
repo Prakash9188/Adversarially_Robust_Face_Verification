@@ -225,20 +225,7 @@ def main():
     pd.DataFrame([{"baseline_ms_per_pair": 1000 * (t1 - t0) / 16, "detector_ms_per_pair": 1000 * (t2 - t1) / 16}]).to_csv(
         OUT / f"timing{tag}.csv", index=False)
 
-    # ---- figures
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    piv = asr_df.pivot(index="attack", columns="system", values="ASR")
-    piv = piv.loc[list(sets)]
-    ax = piv.plot.bar(figsize=(10, 4))
-    ax.set_ylabel("Attack success rate"); ax.set_ylim(0, 1.05)
-    ax.set_title(f"ASR by defense, eps={EPS}/255 (bpda_*/adaptive_*: attacker knows defense)")
-    plt.xticks(rotation=30, ha="right"); plt.tight_layout(); plt.savefig(OUT / f"fusion_asr{tag}.png", dpi=150)
-    plt.close()
-    pa = det_df.pivot(index="attack", columns="detector", values="AUC").loc[list(sets)]
-    ax = pa.plot.bar(figsize=(10, 4)); ax.set_ylim(0.4, 1.02); ax.set_ylabel("Detector AUC")
-    plt.xticks(rotation=30, ha="right"); plt.tight_layout(); plt.savefig(OUT / f"detector_auc{tag}.png", dpi=150)
+    # figures/tables for the report are built from the CSVs by scripts/make_report_assets.py
     print("done")
 
 

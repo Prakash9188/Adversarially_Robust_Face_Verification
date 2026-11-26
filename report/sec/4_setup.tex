@@ -1,0 +1,11 @@
+\section{Experimental Setup}
+\label{sec:setup}
+\paragraph{Data and protocol.} We use LFW (funneled)~\cite{huang2007lfw}: 13{,}233 images of 5{,}749 identities. We split \emph{identities} 70/15/15 into train/val/test (asserted disjoint in code) and sample balanced genuine/impostor pairs inside each split with a fixed seed (400/600/600 pairs). We do not use the official 10-fold pairs because they mix identities across folds, which would leave very few impostor pairs in an identity-disjoint test set. Images are center-cropped to 150\,px and resized to $160{\times}160$; there is no face detector or alignment, which probably costs a little clean accuracy.
+
+\paragraph{Model.} A frozen InceptionResnetV1~\cite{szegedy2017inception} pretrained on VGGFace2~\cite{cao2018vggface2} from the \texttt{facenet-pytorch} package~\cite{esler2019facenetpytorch}; nothing is trained by us. We did not check whether identities overlap between VGGFace2 and LFW.
+
+\paragraph{Attacks and budgets.} $\epsilon\in\{2,4,8\}/255$ (main results at 4). PGD: 10 steps, step $2.5\epsilon/10$, random start. DeepFool: 10 steps, overshoot 0.02. CW: 30 Adam steps, $c{=}20$, $\kappa{=}0.05$. Square: 100 queries. Baselines are evaluated on the first 300 test pairs; the expensive adaptive attacks on the first 150. All attacks target the probe image.
+
+\paragraph{Defenses and metrics.} JPEG (quality 75/50/30), Gaussian blur ($\sigma{=}1$, $5{\times}5$), median ($3{\times}3$, $5{\times}5$) and 4-bit depth are applied to \emph{both} images of a pair at test time, with $\tau$ re-fitted per defense on validation pairs. We report accuracy, AUC, attack success rate (ASR, the fraction of pairs correct when clean that are wrong after the attack), detector AUC, and the flag rate. For the fused system an attacked pair counts as a success only if it is wrong \emph{and} not flagged.
+
+\paragraph{Detector training.} The detector is trained on 200 train-split pairs: the clean probes (duplicated to balance) versus FGSM and PGD probes at $\epsilon{=}4$. The detector type is chosen by validation AUC on 200 val pairs under the same two attacks; DeepFool, CW, Square, other budgets, and all adaptive attacks are \emph{unseen} at training time.

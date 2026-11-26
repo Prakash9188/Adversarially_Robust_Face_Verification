@@ -1,8 +1,8 @@
 # Viva question bank with answers (face-verification project)
 
-> Numbers in "results" answers are **placeholders until the final runs finish**. Never quote a
-> number in the viva that is not in `experiments/results/`. Items marked **(C2)** describe the
-> Commit-2 components (detector, fusion, adaptive attacks), which are planned, not yet built.
+> All numbers below come from `experiments/results/` (test split, eps = 4/255 unless stated;
+> 300 attacked pairs, 150 for adaptive attacks; one seed). Never quote a number that is not in
+> those files. Items marked **(C2)** are the Commit-2 components (detector, fusion, adaptive attacks).
 
 ---
 ## 1. Problem statement and project understanding
@@ -80,17 +80,17 @@
 4. **Main function?** `pgd()` in `src/attacks.py` and `main()` in `scripts/run_baseline.py`.
 5. **Reproducibility?** Fixed seed, pinned requirements, cached pair list, config file, declared in `docs/REPRODUCIBILITY.md`.
 6. **Invalid input?** Defenses assert/handle tensor shapes; data asserts identity-disjoint splits.
-7. **Errors met so far?** `facenet-pytorch` needed `requests`/`tqdm` after a `--no-deps` install (it pins an old torch); the LFW host `vis-www.cs.umass.edu` did not resolve from this machine.
+7. **Errors met?** `facenet-pytorch` needed `requests`/`tqdm` after a `--no-deps` install (it pins an old torch); the LFW host did not resolve so we used the figshare mirror; a unit test failed because test anchors carried an autograd graph (fixed by detaching, as the real pipeline does); the first "adaptive" attack was not aimed at the detector, so we added a detector-aware variant and benign controls.
 
 ## 8. Experiments and results
 1. **Metrics and why?** Accuracy/AUC/TAR@FAR (standard verification), ASR (security), clean degradation (cost of defense), ms/pair (lightweight claim).
 2. **Why TAR@FAR, not just accuracy?** Security systems operate at low false-accept rates; accuracy hides that.
-3. **Final results?** *Fill from `experiments/results/*.csv` after the final run.*
+3. **Final results?** Clean: 98.8% test accuracy, TAR@FAR=1% 0.990. Undefended ASR: PGD 100%, FGSM 78.8%. Best single filter (median 5x5): PGD 79.1%, FGSM 61.3%; none survives eps=8 (PGD 97.6%). Under adaptive BPDA the matching filters stay weak (ASR 90% for JPEG-30, 97% for median-5). Proposed detector+fusion (gradient boosting, trained on FGSM+PGD only): ASR FGSM 2.0%, PGD 0.0%, CW 0.3% (unseen), all adaptive attacks 0.0% with detector AUC 0.995-1.0; costs 5.3% clean flags and 0.3% clean errors, ~455 ms vs ~69 ms per pair. Failures: Square (AUC 0.58) and FGSM at eps=8 (ASR 29.3%, AUC 0.93).
 4. **Why might JPEG/median look good?** Non-adaptive attacks ignore the defense. Under adaptive attacks (BPDA) such defenses are known to weaken substantially.
-5. **Reliability?** Fixed seed; report counts; (final) repeat with several seeds/bootstrap confidence intervals.
+5. **Reliability?** Fixed seed, identity-disjoint splits, thresholds/tau/model choice fixed on val before touching test, benign controls (random noise flagged 8.3%, JPEG-75 flagged 1.0%) to rule out a pure noise detector. Single seed only, so no confidence intervals: differences of a few points are not claimed.
 6. **Cross-validation?** The backbone is not trained, so classic CV is not needed; the detector can be cross-validated.
 7. **Ablation?** Which transforms; which classifier; eps; number of PGD steps.
-8. **Statistical significance?** With 300 attacked pairs the confidence interval on ASR is roughly +/- 5 points at 50%; differences smaller than that are not claimed.
+8. **Statistical significance?** With 300 attacked pairs the 95% interval on a proportion near 50% is about +/- 5-6 points (+/- 8 for 150 pairs); we do not claim smaller differences. Not repeated over seeds.
 9. **Error sources?** Small attacked subset, crop-based preprocessing instead of face detection/alignment, one backbone, one dataset.
 
 ## 9. Limitations and future scope
@@ -131,3 +131,11 @@
 
 ## 13. Preparation strategy
 Learn Level 1 (problem, data, architecture, results, novelty, limits) first, then Level 2 (math, hyperparameters, code), then Level 3 (what-ifs, failure cases). For practice, ask Claude to run a viva simulation at Basic, Intermediate or Advanced level, on General, ML or this project.
+
+## 14. Extra tough questions specific to our results
+1. **Your detector is ~100% on adaptive attacks. Isn't that too good?** It is the result we measured, but it is conditional: our adaptive attacks are specific (PGD through the transforms, plus a variant that also keeps the embedding stable). They are not a worst-case attacker (e.g. one that differentiates through the detector itself). We state this limitation and do not claim robustness in general.
+2. **Is the detector just detecting noise?** Controls say mostly no: random +/-4/255 noise is flagged 8.3% (near the 5% operating point) and plain JPEG-75 1.0%, whereas attacks are flagged 96-100%.
+3. **Why does it fail on Square?** Our 100-query Square attack barely succeeds (3% ASR) and produces patch-structured perturbations unlike the gradient attacks the detector was trained on; AUC 0.58 shows poor generalisation to that family, but with so few successes it is weak evidence either way.
+4. **Is "flagged" a real defence?** Flagging denies service; we report the clean flag rate (5.3%) as its price. If flags counted as failures, security is traded for availability.
+5. **Why ~6.6x slower and still "lightweight"?** It needs 6 extra embeddings per image on CPU; it is cheap compared with adversarial training but not free. A fairer wording is "training-free", and we say so.
+6. **What if the attacker knows the threshold and detector?** Then they can optimise against the detector (not tested). This is the main open risk and the first item of future work.

@@ -5,8 +5,8 @@ IIT Jodhpur semester project (Machine Learning). Team: Om Dinesh Dhande, Prakash
 **Question:** can cheap input-transformation defenses reduce adversarial attacks on face
 verification while preserving clean accuracy, including against attackers who know the defense?
 
-Status: **Commit 2 (novelty + experiments)**. Commit 1 = baseline; Commit 3 = final cleanup,
-report and full documentation.
+Status: **complete (Commit 3)**. Commit 1 = baseline; Commit 2 = novelty + experiments; Commit 3 = cleanup,
+report and full documentation. Hashes/timestamps: `docs/commit_log.md` and `git log`.
 
 ## What Commit 2 adds
 - Attacks: DeepFool, CW-L2 (both clipped to L_inf), Square (black-box), and ADAPTIVE PGD with
@@ -40,7 +40,7 @@ at 5% false-alarm on clean val pairs. ASR = attack success rate (lower is better
 Cost and controls (`experiments/results/`): 5.3% of clean pairs are flagged and 0.3% are wrong
 (clean accuracy without flagging 99.0%); benign +/-4/255 noise is flagged 8.3% of the time and
 plain JPEG-75 images 1.0%, so the detector is not just a noise detector. The detector needs
-~486 ms/pair versus ~73 ms for the plain model (about 6.7x, CPU).
+~455 ms/pair versus ~69 ms for the plain model (about 6.6x, CPU; timing varies by run).
 
 **Honest caveats:** Square and DeepFool barely succeed at this budget (ASR 3-4%), so the detector's
 weak AUC on Square says little; the "detector-aware" attack is one specific attack (PGD that also
@@ -80,11 +80,20 @@ The first run downloads LFW funneled (~230 MB, figshare mirror
 ## Configuration
 `configs/default.yaml` (seed, pair counts, eps list, PGD steps, defenses, number of attacked pairs).
 
+## Report, demo, reproducibility
+- CVPR-format report source: `report/` (see `report/README.md`; compile on Overleaf). Tables and figures are
+  generated from the result CSVs: `python scripts/make_report_assets.py`.
+- Demo on one pair: `python scripts/demo.py IMG1 IMG2 --same 1 --attack` (prints clean vs attacked score and
+  the embedding drift under each transform).
+- Reproducibility declaration: `docs/REPRODUCIBILITY.md`. Viva preparation: `docs/VIVA_QA.md`, `docs/WORKFLOW.md`.
+- Tests: `python -m pytest -q tests` (17 tests, no network or weights needed).
+
 ## Layout
 ```
-src/        data.py model.py attacks.py defenses.py metrics.py
-scripts/    run_baseline.py  commit_log.py
-tests/      test_core.py
+src/        data.py model.py attacks.py defenses.py metrics.py features.py detector.py fusion.py
+scripts/    run_baseline.py run_detector.py make_report_assets.py demo.py commit_log.py
+tests/      test_core.py test_novelty.py test_data.py
+report/     main.tex sec/ tables/ figures/ (CVPR format)
 configs/    default.yaml
 docs/       WORKFLOW.md VIVA_QA.md REPRODUCIBILITY.md
 experiments/results/   CSVs, figures, logs

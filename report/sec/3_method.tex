@@ -1,0 +1,22 @@
+\section{Method}
+\label{sec:method}
+\paragraph{Verification.} A frozen CNN $f$ maps an image to a unit-norm embedding. For an anchor $a$ and probe $p$ the score is the cosine similarity $s(a,p)=f(a)^\top f(p)$, and the pair is declared \emph{same} if $s\ge\tau$. The threshold $\tau$ is fitted on validation pairs only (maximum accuracy, i.e.\ minimum error rate). We also compute a Bayes threshold from Gaussian maximum-likelihood fits of the genuine and impostor score distributions; the two agree to within about 0.05 ($\tau\approx0.42$--$0.48$ across defenses).
+
+\paragraph{Threat model and attacks.} The attacker perturbs only the probe, $p'=p+\delta$ with $\|\delta\|_\infty\le\epsilon$ and $p'\in[0,1]^{H\times W\times 3}$, then quantizes to 8 bits. For a genuine pair (label $y{=}1$) the goal is \emph{dodging} (lower the score); for an impostor pair ($y{=}0$) it is \emph{impersonation} (raise it). With $\sigma=+1$ for impostors and $-1$ for genuine pairs, the attacker solves
+\begin{equation}
+\max_{\|\delta\|_\infty\le\epsilon}\; \sigma\, s(a,p+\delta).
+\end{equation}
+PGD iterates $p_{k+1}=\Pi\big(p_k+\alpha\,\mathrm{sign}(\nabla_{p}\,\sigma s)\big)$ with a random start; FGSM is one full-size step. DeepFool takes the minimal $\ell_2$ step that crosses $\tau$ and CW minimizes $\|\delta\|_2^2+c\cdot\max(\cdot)$ in tanh space; both are clipped to the $\ell_\infty$ budget. Square Attack uses only score queries. Attacks are first \emph{non-adaptive} (crafted on the undefended model).
+
+\paragraph{Adaptive attacks.} Given a differentiable-or-not transformation $t$, BPDA uses $t(p)$ forward and the identity backward, $\tilde t(p)=p+\mathrm{sg}(t(p)-p)$ with $\mathrm{sg}$ the stop-gradient. Against a single defense $t$ the attacker maximizes $\sigma s(t(a),t(p'))$. Against our system, the \emph{ensemble} attack averages this over the identity and all five detector transforms. The \emph{detector-aware} variant additionally maximizes $\cos\big(f(p'),f(t(p'))\big)$ for each $t$, i.e.\ it tries to keep the embedding stable under the transforms, which is the cue we use below.
+
+\paragraph{Consistency features.} We use a bank $\mathcal T=\{$JPEG-75, JPEG-30, median $3{\times}3$, Gaussian, 4-bit depth$\}$. With $s_0=s(a,p)$ and $s_t=s(t(a),t(p))$, the feature vector is
+\begin{equation}
+\begin{split}
+z&=\Big[s_0,\ \big(s_t-s_0,\ 1-\min\{c^t_a,\,c^t_p\}\big)_{t\in\mathcal T}\Big],\\
+c^t_x&=\cos\big(f(x),f(t(x))\big),
+\end{split}
+\end{equation}
+of dimension $1{+}2|\mathcal T|=11$. Intuition: a perturbation tuned to the raw model tends to be brittle, so the score changes and the embedding drifts when the input is transformed, whereas a clean pair is stable.
+
+\paragraph{Detector and Bayes fusion.} We fit four standard classifiers on $z$ to separate clean from attacked pairs: LDA (shared-covariance Gaussians), Gaussian Bayes with class-specific covariances (QDA), an RBF-kernel SVM and boosted shallow trees, all with equal class priors. The posterior $P(\mathrm{adv}\mid z)$ is fused with the verification score by the minimum-risk rule: flag the pair if $P(\mathrm{adv}\mid z)\,C_{\text{miss}}>P(\mathrm{clean}\mid z)\,C_{\text{fa}}$, i.e.\ $P(\mathrm{adv}\mid z)>C_{\text{fa}}/(C_{\text{fa}}+C_{\text{miss}})$; otherwise output Same/Different by $s_0\ge\tau$. In experiments we report an interpretable operating point instead: the flag threshold is set so that 5\% of clean \emph{validation} pairs are flagged ($0.303$ for the selected model; the cost-based value for $C_{\text{miss}}{:}C_{\text{fa}}=5{:}1$ would be $0.167$).
