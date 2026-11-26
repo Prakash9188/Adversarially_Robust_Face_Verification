@@ -119,7 +119,7 @@ plt.rcParams.update({"font.size": 8, "axes.spines.top": False, "axes.spines.righ
 
 # Fig 1: pipeline
 fig, ax = plt.subplots(figsize=(7.2, 2.4))
-ax.set_xlim(0, 100); ax.set_ylim(0, 34); ax.axis("off")
+ax.set_xlim(0, 100); ax.set_ylim(-5, 34); ax.axis("off")
 
 
 def box(x, y, w, h, text, fc="#dbe9f6"):
@@ -136,10 +136,10 @@ box(19, 12, 14, 10, "Frozen CNN\n$f(\\cdot)$ (512-d,\nunit norm)")
 box(38, 21, 17, 9, "Score\n$s_0=f(a)^\\top f(p)$")
 box(38, 3, 20, 14, "Transform bank $t$:\nJPEG-75/30, median,\nGaussian, 4-bit\n$\\Rightarrow s_t,\\ \\mathrm{drift}_t$", "#fde9d2")
 box(63, 3, 17, 14, "Detector\n$P(\\mathrm{adv}\\,|\\,z)$\n(boosted trees)", "#fde9d2")
-box(84, 11, 15, 12, "Bayes fusion\nSame / Different\n/ \\textbf{Flag}", "#d9f0d9")
+box(84, 11, 15, 12, "Bayes fusion\nSame / Different\n/ $\\mathbf{Flag}$", "#d9f0d9")
 arrow(14, 17, 19, 17); arrow(33, 17, 38, 25); arrow(33, 15, 38, 11)
 arrow(58, 10, 63, 10); arrow(80, 12, 84, 15); arrow(55, 25, 84, 20)
-ax.text(70.5, 30, "consistency features $z=[s_0,\\ s_t-s_0,\\ \\mathrm{drift}_t]$", ha="center", fontsize=7, style="italic")
+ax.text(58, -2.5, "consistency features $z=[s_0,\\ s_t-s_0,\\ \\mathrm{drift}_t]$", ha="center", fontsize=7, style="italic")
 fig.savefig(F / "pipeline.pdf", bbox_inches="tight")
 plt.close(fig)
 

@@ -6,7 +6,7 @@
 
 \begin{table}[t]
 \centering\small
-\input{tables/tab_baseline}
+\resizebox{\columnwidth}{!}{\input{tables/tab_baseline}}
 \caption{Clean test accuracy and attack success rate (ASR, lower is better) of single-filter defenses against non-adaptive attacks (300 pairs). Subscript = $\epsilon$ in /255.}
 \label{tab:baseline}
 \end{table}
@@ -15,14 +15,14 @@
 
 \begin{table*}[t]
 \centering\small
-\input{tables/tab_main}
+\resizebox{\textwidth}{!}{\input{tables/tab_main}}
 \caption{ASR of single filters and of the fused system (flagged pairs count as stopped), flag rate on attacked pairs, and detector AUC (boosted trees; clean vs.\ attacked test pairs). Groups: seen / unseen attack / other budget / adaptive (150 pairs). Bold = lowest ASR in the row.}
 \label{tab:main}
 \end{table*}
 
 \begin{table}[t]
 \centering\small
-\input{tables/tab_detectors}
+\resizebox{\columnwidth}{!}{\input{tables/tab_detectors}}
 \caption{Mean detector AUC by detector type on attack groups (seen: FGSM, PGD; unseen: DeepFool, CW, Square; other $\epsilon$; adaptive). Val AUC is on seen attacks.}
 \label{tab:det}
 \end{table}
@@ -49,7 +49,7 @@
 
 \begin{table}[t]
 \centering\small
-\input{tables/tab_ablation}
+\resizebox{\columnwidth}{!}{\input{tables/tab_ablation}}
 \caption{Ablation: LDA detector with $s_0$ plus one transform's features.}
 \label{tab:abl}
 \end{table}
