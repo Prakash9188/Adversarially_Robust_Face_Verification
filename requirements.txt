@@ -1,0 +1,11 @@
+torch>=2.1
+torchvision>=0.16
+facenet-pytorch>=2.5.3   # install with --no-deps (it pins an old torch)
+numpy
+scipy
+scikit-learn
+pandas
+matplotlib
+pillow
+pyyaml
+pytest

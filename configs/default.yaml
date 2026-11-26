@@ -1,0 +1,16 @@
+seed: 0
+data:
+  root: data
+  crop: 150          # center crop (px) of the 250x250 funneled LFW image
+  size: 160          # network input size
+  split: [0.70, 0.15, 0.15]   # identity-disjoint
+  pairs: {train: 400, val: 600, test: 600}   # balanced genuine/impostor pairs per split
+model:
+  pretrained: vggface2
+attack:
+  eps: [2, 4, 8]     # L_inf budgets in /255 units
+  pgd_steps: 10
+  n_attack_pairs: 300   # test pairs attacked (CPU budget)
+defenses: [none, jpeg75, jpeg50, jpeg30, gaussian, median3, median5, bitdepth4]
+batch_size: 32
+far_levels: [0.01, 0.001]
