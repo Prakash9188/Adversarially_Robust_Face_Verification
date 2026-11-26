@@ -1,0 +1,2 @@
+clean_flag_rate,clean_error_rate,detector,tau,clean_acc_no_flag
+0.05333333333333334,0.0033333333333333335,gboost,0.3031969130924788,0.99

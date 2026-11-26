@@ -1,0 +1,5 @@
+detector,val_AUC
+lda,0.860875
+qda,0.9894625
+svm,0.9944625
+gboost,0.9973375

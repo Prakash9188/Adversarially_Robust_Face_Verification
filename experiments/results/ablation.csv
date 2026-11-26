@@ -1,0 +1,8 @@
+features,mean_AUC_nonadaptive
+s0 + jpeg75,0.7802155555555556
+s0 + jpeg30,0.7450711111111111
+s0 + median3,0.7772955555555555
+s0 + gaussian,0.7875844444444444
+s0 + bitdepth4,0.5324577777777778
+all transforms (LDA),0.761228888888889
+"SFFS top-4: s0, ds_jpeg75, shift_jpeg75, shift_median3",

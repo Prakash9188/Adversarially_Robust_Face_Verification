@@ -11,6 +11,17 @@ attack:
   eps: [2, 4, 8]     # L_inf budgets in /255 units
   pgd_steps: 10
   n_attack_pairs: 300   # test pairs attacked (CPU budget)
+  n_adaptive: 150       # pairs for the (expensive) adaptive attacks
+  deepfool_steps: 10
+  cw_steps: 30
+  square_queries: 100
+detector:
+  n_train: 200          # train-split pairs used to fit the detector
+  n_val: 200            # val-split pairs used for thresholds / tau / model choice
+  kinds: [lda, qda, svm, gboost]
+  fpr: 0.05             # clean false-alarm rate at the operating point
+  c_miss: 5.0           # Bayes costs (missed attack vs. false alarm)
+  c_fa: 1.0
 defenses: [none, jpeg75, jpeg50, jpeg30, gaussian, median3, median5, bitdepth4]
 batch_size: 32
 far_levels: [0.01, 0.001]
