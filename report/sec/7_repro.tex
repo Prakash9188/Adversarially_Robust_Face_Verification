@@ -1,19 +1,19 @@
 \section{Reproducibility Statement}
 \label{sec:repro}
-\paragraph{Declaration.} We declare that every number in this report is produced by the code and configuration in the public repository \url{https://github.com/Prakash9188/Adversarially_Robust_Face_Verification} (\texttt{configs/default.yaml}, seed 0), that thresholds, flag threshold and detector choice were fixed on validation data before touching the test split, that splits are identity-disjoint (asserted in code and unit-tested), and that all results are from a single seed on CPU (Windows 11, Python 3.11.9, PyTorch 2.15.0+cpu). PGD random starts may give slightly different numbers on other hardware or library versions.
+\paragraph{Declaration.} Every number in this report comes from the code and settings in our public repository \url{https://github.com/Prakash9188/Adversarially_Robust_Face_Verification} (\texttt{configs/default.yaml}, seed 0). The thresholds, the flag threshold and the detector type were all fixed on validation data before we looked at the test split. The splits do not share any person (checked in the code and in a unit test). All results are from a single seed on CPU (Windows 11, Python 3.11.9, PyTorch 2.15.0+cpu). Because PGD uses a random start, numbers may differ slightly on other hardware or library versions.
 
-\paragraph{Artifacts.} The repository contains code (\texttt{src/}, \texttt{scripts/}), 17 unit tests, a pinned environment (\texttt{requirements-lock.txt}, \texttt{environment.yml}), result tables and figures (\texttt{experiments/results/}), and this report's source (\texttt{report/}). Tables and figures here are generated from the result CSVs by \texttt{scripts/make\_report\_assets.py}.
+\paragraph{What is in the repository.} Code (\texttt{src/}, \texttt{scripts/}), 17 unit tests, a pinned environment (\texttt{requirements-lock.txt}, \texttt{environment.yml}), result tables and figures (\texttt{experiments/results/}) and the source of this report (\texttt{report/}). The tables and figures in this report are generated from the result CSV files by \texttt{scripts/make\_report\_assets.py}.
 
-\paragraph{Checkpoints.} Nothing is trained by us. The only checkpoint is the public VGGFace2 InceptionResnetV1 from \texttt{facenet-pytorch}~\cite{esler2019facenetpytorch}, downloaded automatically on first run (about 107\,MB); we do not redistribute it. The detector is refit in minutes from cached attacks and is not stored. \textbf{Data:} LFW is not included in the repository; the code downloads LFW-funneled from the figshare mirror (\url{https://ndownloader.figshare.com/files/5976015}), which hosts the same archive as the original LFW page.
+\paragraph{Checkpoints.} We did not train any model. The only checkpoint is the public VGGFace2 InceptionResnetV1 from \texttt{facenet-pytorch}~\cite{esler2019facenetpytorch}, which downloads by itself on the first run (about 107\,MB); we do not share it ourselves. The detector is refit in a few minutes from the cached attacks, so we do not store it. \textbf{Data:} LFW is not in the repository. The code downloads LFW-funneled from the figshare mirror (\url{https://ndownloader.figshare.com/files/5976015}), which has the same archive as the original LFW page.
 
-\paragraph{Steps.} Create a virtual environment and install the pinned packages (README), then run \texttt{python -m pytest tests}, \texttt{python scripts/run\_baseline.py}, \texttt{python scripts/run\_detector.py} (hours on CPU; attacks are cached) and \texttt{python scripts/make\_report\_assets.py}.
+\paragraph{Steps.} Make a virtual environment and install the pinned packages (see README). Then run \texttt{python -m pytest tests}, \texttt{python scripts/run\_baseline.py}, \texttt{python scripts/run\_detector.py} (takes hours on CPU; attacks are cached) and \texttt{python scripts/make\_report\_assets.py}.
 
-\paragraph{Commits.} Development used three commits (hashes and timestamps below, also in \texttt{docs/commit\_log.md}).
+\paragraph{Commits.} We developed the project in three commits (hashes and times below, also in \texttt{docs/commit\_log.md}).
 
 \begin{table}[h]
 \centering\footnotesize
 \setlength{\tabcolsep}{3pt}
 \resizebox{\columnwidth}{!}{\input{tables/tab_commits}}
-\caption{Development commits. Commit 3 contains this report, so its hash is recorded in the repository log (\texttt{docs/commit\_log.md}) rather than in the PDF it ships with.}
+\caption{Development commits. Commit 3 contains this report, so its hash is kept in the repository log (\texttt{docs/commit\_log.md}) and not in the PDF it ships with.}
 \label{tab:commits}
 \end{table}

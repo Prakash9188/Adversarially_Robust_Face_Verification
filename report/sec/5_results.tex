@@ -1,55 +1,55 @@
 \section{Results}
 \label{sec:results}
-\paragraph{Clean accuracy.} The undefended model reaches 98.8\% test accuracy (600 pairs, AUC $\approx$1.00) and all defenses stay within 98.7--99.2\% (Tab.~\ref{tab:baseline}), so on clean data the filters cost almost nothing.
+\paragraph{Clean accuracy.} With no defense the model gets 98.8\% test accuracy (600 pairs, AUC $\approx$1.00). With any of the filters it stays between 98.7\% and 99.2\% (Tab.~\ref{tab:baseline}). So on normal images the filters cost almost nothing.
 
-\paragraph{Non-adaptive attacks versus filters.} Undefended, PGD succeeds on 100\% and FGSM on 79\% of pairs at $\epsilon{=}4$. The filters help partially: the best, $5{\times}5$ median, reduces PGD to 79\% and FGSM to 61\%, and JPEG-30 to 85\%. At $\epsilon{=}8$ no filter helps (PGD ASR 97.6--100\%). These attacks ignore the defense, so these are optimistic numbers for the filters.
+\paragraph{Normal attacks against filters.} With no defense, PGD succeeds on 100\% of pairs and FGSM on 79\% at $\epsilon{=}4$. The filters help only partly. The best one, the $5{\times}5$ median, brings PGD down to 79\% and FGSM to 61\%, and JPEG-30 brings PGD to 85\%. At $\epsilon{=}8$ none of the filters help (PGD ASR 97.6--100\%). Keep in mind that these attacks do not know about the filter, so these numbers are the best case for the filters.
 
 \begin{table}[t]
 \centering\small
 \resizebox{\columnwidth}{!}{\input{tables/tab_baseline}}
-\caption{Clean test accuracy and attack success rate (ASR, lower is better) of single-filter defenses against non-adaptive attacks (300 pairs). Subscript = $\epsilon$ in /255.}
+\caption{Clean test accuracy and attack success rate (ASR, lower is better) for single filters against normal (non-adaptive) attacks, 300 pairs. The subscript is $\epsilon$ in /255.}
 \label{tab:baseline}
 \end{table}
 
-\paragraph{Detector and fusion.} Tab.~\ref{tab:main} gives ASR for the fused system next to the best single filters. Trained only on FGSM and PGD, the selected boosted-trees detector reduces ASR to $\le$0.02 for FGSM, PGD, CW, DeepFool (whose ASR is only 4\% anyway), other budgets up to $\epsilon{=}4$, and PGD at $\epsilon{=}8$, and to 0.29 for FGSM at $\epsilon{=}8$. It fails on Square: detector AUC is 0.58 and only 8\% of Square pairs are flagged; since Square rarely succeeds at 100 queries (3\% ASR) this is weak evidence, but it does show the detector does not detect every perturbation type. Detector choice matters (Tab.~\ref{tab:det}): LDA is clearly worse than the nonlinear models, which are similar on seen attacks.
+\paragraph{Detector and fusion.} Tab.~\ref{tab:main} shows the ASR of our full system next to the best single filters. The detector picked on validation was boosted trees. Even though it only saw FGSM and PGD in training, it brings ASR down to 0.02 or less for FGSM, PGD, CW, DeepFool (which only reaches 4\% ASR to begin with), the other budgets up to $\epsilon{=}4$, and PGD at $\epsilon{=}8$. For FGSM at $\epsilon{=}8$ it gets 0.29. It does not work on Square: detector AUC is 0.58 and only 8\% of Square pairs get flagged. Square rarely succeeds with 100 queries anyway (3\% ASR), so this is weak evidence, but it does show the detector cannot catch every kind of change. The choice of detector matters (Tab.~\ref{tab:det}). LDA is clearly worse than the nonlinear models, and the nonlinear models are close to each other on the seen attacks.
 
 \begin{table*}[t]
 \centering\small
 \resizebox{\textwidth}{!}{\input{tables/tab_main}}
-\caption{ASR of single filters and of the fused system (flagged pairs count as stopped), flag rate on attacked pairs, and detector AUC (boosted trees; clean vs.\ attacked test pairs). Groups: seen / unseen attack / other budget / adaptive (150 pairs). Bold = lowest ASR in the row.}
+\caption{ASR of single filters and of our full system (flagged pairs count as stopped), flag rate on attacked pairs, and detector AUC (boosted trees; clean vs.\ attacked test pairs). Groups: seen / unseen attack / other budget / adaptive (150 pairs). Bold = lowest ASR in the row.}
 \label{tab:main}
 \end{table*}
 
 \begin{table}[t]
 \centering\small
 \resizebox{\columnwidth}{!}{\input{tables/tab_detectors}}
-\caption{Mean detector AUC by detector type on attack groups (seen: FGSM, PGD; unseen: DeepFool, CW, Square; other $\epsilon$; adaptive). Val AUC is on seen attacks.}
+\caption{Average detector AUC per detector type and attack group (seen: FGSM, PGD; unseen: DeepFool, CW, Square; other $\epsilon$; adaptive). Val AUC is on the seen attacks.}
 \label{tab:det}
 \end{table}
 
-\paragraph{Adaptive attacks.} Single filters collapse once the attacker knows them: BPDA through JPEG-30 reaches 90\% ASR against JPEG-30 and BPDA through median-5 reaches 97\% against median-5, and the ensemble attack over all transforms reaches 93\% against both JPEG-30 and median-5 (100\% undefended). The fused system flags all of these attacked pairs (AUC 0.995--1.000), including the detector-aware variant that explicitly keeps the embedding stable under the transforms. We stress that this is evidence about two specific attacks and 150 pairs, not a proof: an attacker that optimizes the detector's decision directly was not evaluated.
+\paragraph{Adaptive attacks.} Once the attacker knows the filter, single filters fall apart. BPDA through JPEG-30 reaches 90\% ASR against JPEG-30, and BPDA through median-5 reaches 97\% against median-5. The ensemble attack over all filters reaches 93\% against both JPEG-30 and median-5 (100\% with no defense). Our full system flags all of these attacked pairs (AUC 0.995--1.000). This includes the detector-aware attack that tries on purpose to keep the embedding steady under the filters. We want to be clear that this is evidence about two specific attacks on 150 pairs, not a proof. We did not test an attacker that goes after the detector's decision directly.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.98\linewidth]{figures/asr.pdf}
-  \caption{ASR for no defense, median-5 and the fused system on selected attacks. Fused bars at 0 are invisible. Adaptive attacks defeat the median filter; the fused system is not beaten by them in our tests.}
+  \caption{ASR with no defense, median-5 and our full system on selected attacks. Bars for our system at 0 are not visible. Adaptive attacks beat the median filter; they did not beat our system in our tests.}
   \label{fig:asr}
 \end{figure}
 
-\paragraph{Cost of flagging and benign controls.} At the 5\% operating point the system flags \cleanflag\% of clean test pairs and makes \cleanerr\% unflagged errors. A detector could be mistaken for a generic noise detector, so we also feed it benign perturbed inputs: random $\pm4/255$ noise is flagged \noiseflag\% of the time (near the 5\% budget) and plain JPEG-75 images \jpegflag\%, versus 96--100\% for FGSM, PGD, DeepFool, CW and the adaptive attacks (Fig.~\ref{fig:flags}).
+\paragraph{Cost of flagging and harmless inputs.} At the 5\% setting, the system flags \cleanflag\% of clean test pairs and makes \cleanerr\% errors that are not flagged. One worry is that the detector might just be a general ``noise detector''. To check this we also gave it harmless changed images. Random $\pm4/255$ noise is flagged \noiseflag\% of the time (close to the 5\% budget) and plain JPEG-75 images \jpegflag\%. Compare this to 96--100\% for FGSM, PGD, DeepFool, CW and the adaptive attacks (Fig.~\ref{fig:flags}).
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.98\linewidth]{figures/flags.pdf}
-  \caption{Flag rate of the fused system on clean pairs, benign perturbations (grey) and attacks (blue). The dashed line is the 5\% false-alarm budget fixed on validation data.}
+  \caption{Flag rate of our system on clean pairs, harmless changes (grey) and attacks (blue). The dashed line is the 5\% false-alarm budget set on validation data.}
   \label{fig:flags}
 \end{figure}
 
-\paragraph{Ablation and cost.} Using LDA with $s_0$ plus one transform, the mean AUC over the five non-adaptive attacks is similar for JPEG-75, median and Gaussian (0.78--0.79), slightly lower for JPEG-30 (0.75) and much lower for 4-bit depth (0.53); using all transforms with LDA gives 0.76 (Tab.~\ref{tab:abl}). A forward-selection run (SFFS-style) picked $s_0$, $s_{\text{JPEG-75}}-s_0$, JPEG-75 drift and median drift. The LDA ablation is only indicative because LDA is the weakest detector. Computing the features requires $|\mathcal T|{+}1{=}6$ embeddings per image: \msdet\,ms per pair versus \msbase\,ms for plain verification on our CPU ($\approx$\mscratio$\times$; timings vary between runs), so the defense is training-free and cheap compared with adversarial training, but not free.
+\paragraph{Ablation and cost.} With LDA, $s_0$ and just one filter, the average AUC over the five normal attacks is about the same for JPEG-75, median and Gaussian (0.78--0.79), a bit lower for JPEG-30 (0.75) and much lower for 4-bit depth (0.53). Using all filters with LDA gives 0.76 (Tab.~\ref{tab:abl}). A forward feature selection run (SFFS-style) picked $s_0$, $s_{\text{JPEG-75}}-s_0$, the JPEG-75 drift and the median drift. Since LDA is the weakest detector, this ablation should only be taken as a rough guide. As for speed, the features need $|\mathcal T|{+}1{=}6$ embeddings per image. That is \msdet\,ms per pair compared with \msbase\,ms for plain verification on our CPU ($\approx$\mscratio$\times$; timings change a bit between runs). So the defense needs no training and is cheap next to adversarial training, but it is not free.
 
 \begin{table}[t]
 \centering\small
 \resizebox{\columnwidth}{!}{\input{tables/tab_ablation}}
-\caption{Ablation: LDA detector with $s_0$ plus one transform's features.}
+\caption{Ablation: LDA detector with $s_0$ plus the features of one filter.}
 \label{tab:abl}
 \end{table}
